@@ -1,0 +1,30 @@
+Grab the latest package from the Downloads page and upload to /path/to/modx/core/packages
+
+Once uploaded, login to the Manager and go to System > Package Management.
+From the Download Extras dropdown, choose Search Locally for Packages. Install the package when it finds it (you'll need your MailChimp API key) and that's it!
+
+Now just call the snippet wherever you want the form to show, for example:
+	[[!mailchimp? listId=`1342f13bd0`]]
+
+You can also get the basic snippet code from the MailChimp page in the Manager. You'll find it in the Components menu.
+
+
+With the exception of listId, all snippet paremeters are optional. If you use subscribeTpl you decide how much control you get. Use the 
+
+apiKey			Specify this to override the API Key set in the system settings.
+mergeTags		Specify which fields to display in a comma-separated list. Defaults to "EMAIL".
+				If you don't include the email tag, it will be added automatically.
+
+subscribeTpl	The chunk ID to use for the form output. Placeholders listed below.
+	[placeholders] => [
+		fields: The generated merge field HTML
+	]
+rowTpl			Which chunk to use for each form input row.
+	[placeholders] => [
+		tag: The field's tag
+		name: The merge field's name
+		input: The actual form element
+	]
+
+successId		ID of a resource to redirect to on success. Defaults to current page
+failureId		ID of a resource to redirect to on failure. Defaults to current page
