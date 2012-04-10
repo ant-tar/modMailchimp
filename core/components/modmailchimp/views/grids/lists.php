@@ -49,7 +49,7 @@
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-2 x-selectable" width="200">
 									<div class="x-grid3-cell-inner x-grid3-col-2">
-										<input onclick="this.select(); return false;" readonly="readonly" style="width: 220px;" type="text" value="[[!mailchimp? listId=`<?=$list['id']?>`]]" />
+										<input onclick="this.select(); return false;" readonly="readonly" style="width: 220px;" type="text" value="[[!modMailchimp? &listId=`<?=$list['id']?>`]]" />
 									</div>
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-3 x-selectable" width="100">

@@ -1,16 +1,8 @@
 <?php
-/**
- * MailChimp Build Script
- *
- * @package mailchimp
- * @subpackage build
- * @author Dave Shoreman <codeM0nK3Y@me.com>
- */
-
-define('PKG_NAME', 'MailChimp');
-define('PKG_NAME_LOWER', 'mailchimp');
-define('PKG_VERSION', '0.1.0');
-define('PKG_RELEASE', 'beta1');
+define('PKG_NAME', 'modMailchimp');
+define('PKG_NAME_LOWER', 'modmailchimp');
+define('PKG_VERSION', '1.0.2');
+define('PKG_RELEASE', 'pl');
 define('PKG_CATEGORY', 'MailChimp');
 
 $mtime = microtime();
@@ -52,16 +44,21 @@ $category->set('category',PKG_CATEGORY);
 
 // Create the snippet
 $modx->log(modX::LOG_LEVEL_INFO,'Adding in snippets.');
-$snippet = $modx->newObject('modSnippet');
-$snippet->set('id', 0);
-$snippet->set('name', 'mailchimp');
-$snippet->set('description', 'Generate MailChimp subscription form for your lists');
-$snippet->set('snippet', file_get_contents($sources['source_core'] . '/snippet.php'));
+$snippets = array();
 
-// Assign snippet properties
-$properties = include $sources['data'] . 'properties.inc.php';
-$snippet->setProperties($properties);
-$category->addMany($snippet);
+$snippets[1] = $modx->newObject('modSnippet');
+$snippets[1]->set('id', 0);
+$snippets[1]->set('name', 'modMailchimp');
+$snippets[1]->set('description', 'Generate MailChimp subscription form for your lists');
+$snippets[1]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.php'));
+
+$snippets[2] = $modx->newObject('modSnippet');
+$snippets[2]->set('id', 1);
+$snippets[2]->set('name', 'modMailchimpLists');
+$snippets[2]->set('description', 'Generate a list of your lists for use with the mailchimp snippet');
+$snippets[2]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.lists.php'));
+
+$category->addMany($snippets);
 
 // Load the chunks
 $modx->log(modX::LOG_LEVEL_INFO, 'Adding chunks');
@@ -70,17 +67,25 @@ $chunks = array();
 $chunks[1] = $modx->newObject('modChunk');
 $chunks[1]->fromArray(array(
     'id' => 1,
-    'name' => 'mc_subscribe',
+    'name' => 'mmc_subscribe',
     'description' => 'Default subscribe form for MailChimp',
-    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mc_subscribe.chunk.tpl'),
+    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_subscribe.chunk.tpl'),
     'properties' => ''
 ), '', true, true);
 $chunks[2] = $modx->newObject('modChunk');
 $chunks[2]->fromArray(array(
     'id' => 2,
-    'name' => 'mc_row',
+    'name' => 'mmc_unsubscribe',
+    'description' => 'Default unsubscribe form for modMailchimp',
+    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_unsubscribe.chunk.tpl'),
+    'properties' => ''
+), '', true, true);
+$chunks[3] = $modx->newObject('modChunk');
+$chunks[3]->fromArray(array(
+    'id' => 3,
+    'name' => 'mmc_row',
     'description' => 'MailChimp form row template',
-    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mc_row.chunk.tpl'),
+    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_row.chunk.tpl'),
     'properties' => ''
 ), '', true, true);
 
@@ -147,9 +152,9 @@ else {
 
 // Load the docs and setup options form
 $builder->setPackageAttributes(array(
-    'license' => '',
-    'readme' => '',
-    'changelog' => '',
+    'license' => file_get_contents($sources['docs'] . 'license.txt'),
+    'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
+    'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
     'setup-options' => array(
 		'source' => $sources['build'] . 'setup.options.php'
     ),

@@ -1,31 +1,27 @@
 <?php
-/**
- * MailChimp main control script
- *
- * @package mailchimp
- * @author Dave Shoreman <codeM0nK3Y@me.com>
- */
-
-function load_view($view, array $data = array()) {
-	global $modx;
-	extract($data);
-	
-	ob_start();
-	include($modx->getOption('core_path') . '/components/mailchimp/views/' . $view . '.php');
-	$tpl = ob_get_contents();
-	ob_end_clean();
-	return $tpl;
+if (!function_exists('load_view')) {
+	function load_view($view, array $data = array()) {
+		global $modx;
+		extract($data);
+		
+		ob_start();
+		include($modx->getOption('core_path') . '/components/modmailchimp/views/' . $view . '.php');
+		$tpl = ob_get_contents();
+		ob_end_clean();
+		return $tpl;
+	}
 }
 
 // Setup default properties
 $base_path = $modx->getOption('base_path');
 $core_path = $modx->getOption('core_path');
-if (!isset($in_snippet) || ($in_snippet && !$apiKey)) $api_key = $modx->getOption('mailchimp.api_key');
+$allow_override = $modx->getOption('modmailchimp.allow_override');
+if (!isset($in_snippet) || ($in_snippet && !$apiKey) || ($in_snippet && $apiKey && !$allow_override)) $apiKey = $modx->getOption('modmailchimp.api_key');
 $output = '';
 
 // Load the MailChimp API
-require_once $modx->getOption('core_path') . 'components/mailchimp/MCAPI.class.php';
-$api = new MCAPI($api_key);
+require_once $modx->getOption('core_path') . 'components/modmailchimp/MCAPI.class.php';
+$api = new MCAPI($apiKey);
 
 if (!isset($in_snippet)) {
 	// Init tabs

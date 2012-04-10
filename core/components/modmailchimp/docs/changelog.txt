@@ -1,0 +1,35 @@
+[1.0.0-pl]
+Added unsubscribe form (&action=`unsubscribe`)
+Added pending email check
+Prefixed all the form inputs with 'mmc_'
+Moved error/success messages into placeholders
+Renamed to modMailchimp
+Added modMailchimpLists snippet
+listId parameter is now optional
+Added support for the number and dropdown field types
+Fixed prompt for API key when reinstalling
+
+[0.1.0-beta2]
+Added form name and action to subscribeTpl
+Added formName snippet parameter
+Added support for multiple snippet calls in a single page
+Removed hardcoded email field
+
+[0.1.0-beta1]
+Improved page routing
+Added merge fields to manager page and snippet
+Added ability to set success and failure redirects
+Added ability to override API key with a snippet parameter
+Moved hardcoded form stuff to a chunk
+Moved snippet parameter to the actual snippet (conventions)
+Stripped out old code
+Fixed a load of PHP errors and warnings
+Temporarily removed lexicon support, it doesn't work
+
+[0.1.0-alpha2]
+Removed List ID column
+Changed URL to display snippet code in text input
+Fixed issue with table widths
+
+[0.1.0-alpha1]
+First build

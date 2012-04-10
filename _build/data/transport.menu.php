@@ -1,17 +1,9 @@
 <?php
-/**
- * Define action and menu item
- *
- * @package mailchimp
- * @subpackage build
- * @author Dave Shoreman <codeM0nK3Y@me.com>
- */
-
 // Add our action
 $action = $modx->newObject('modAction');
 $action->fromArray(array(
 	'id' => 1,
-	'namespace' => 'mailchimp',
+	'namespace' => 'modmailchimp',
 	'parent' => '0',
 	'controller' => 'index',
 	'haslayout' => '1',
@@ -21,7 +13,7 @@ $action->fromArray(array(
 
 $menu = $modx->newObject('modMenu');
 $menu->fromArray(array(
-	'text' => 'MailChimp',
+	'text' => 'modMailchimp',
 	'parent' => 'components',
 	'description' => 'Get snippet code for your MailChimp lists',
 	'icon' => 'images/icons/plugin.gif',
