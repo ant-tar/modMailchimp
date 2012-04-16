@@ -1,7 +1,7 @@
 <?php
 define('PKG_NAME', 'modMailchimp');
 define('PKG_NAME_LOWER', 'modmailchimp');
-define('PKG_VERSION', '1.0.2');
+define('PKG_VERSION', '1.0.5');
 define('PKG_RELEASE', 'pl');
 define('PKG_CATEGORY', 'MailChimp');
 
@@ -58,6 +58,12 @@ $snippets[2]->set('name', 'modMailchimpLists');
 $snippets[2]->set('description', 'Generate a list of your lists for use with the mailchimp snippet');
 $snippets[2]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.lists.php'));
 
+$snippets[3] = $modx->newObject('modSnippet');
+$snippets[3]->set('id', 2);
+$snippets[3]->set('name', 'modMailchimpMessage');
+$snippets[3]->set('description', 'Output messages from the modMailchimp snippet');
+$snippets[3]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.message.php'));
+
 $category->addMany($snippets);
 
 // Load the chunks
@@ -102,7 +108,12 @@ $attr = array(
 	        xPDOTransport::PRESERVE_KEYS => false,
 	        xPDOTransport::UPDATE_OBJECT => true,
 	        xPDOTransport::UNIQUE_KEY => 'name'
-		)
+		),
+        'Chunks' => array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name'
+        )
 	)
 );
 

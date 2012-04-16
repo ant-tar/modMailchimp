@@ -33,19 +33,19 @@
 				<div class="x-grid3-row x-grid3-row-alt x-grid3-row-collapsed">
 					<table cellspacing="0" cellpadding="0" border="0" width="100%" class="x-grid3-row-table">
 						<tbody>
-							<? if ($api->errorCode): ?>
+							<?php if ($api->errorCode): ?>
 							<tr>
 								<td rowspan="2" colspan="4" tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-expander x-selectable x-grid3-cell-first ">
 									<div class="x-grid3-cell-inner x-grid3-col-1">
-										Failed to load mailing lists <? if (trim($api->errorCode != '')): ?>(Error code <?=$api->errorCode?>)<? endif ?><br/><?=$api->errorMessage?>
+										Failed to load mailing lists <?php if (trim($api->errorCode != '')): ?>(Error code <?php echo $api->errorCode; ?>)<?php endif ?><br/><?php echo $api->errorMessage; ?>
 									</div>
 								</td>
 							</tr>
-							<? else: ?>
-							<? foreach ($lists['data'] as $list): ?>
+							<?php else: ?>
+							<?php foreach ($lists['data'] as $list): ?>
 							<tr>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-1 x-selectable" width="300">
-									<div class="x-grid3-cell-inner x-grid3-col-1"><a href="?a=<?=$action?>&amp;action=fields&amp;tab_selected=Main&amp;listId=<?=$list['id']?>"><?=$list['name']?></a></div>
+									<div class="x-grid3-cell-inner x-grid3-col-1"><a href="?a=<?php echo $action; ?>&amp;action=fields&amp;tab_selected=Main&amp;listId=<?php echo $list['id']; ?>"><?php echo $list['name']; ?></a></div>
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-2 x-selectable" width="200">
 									<div class="x-grid3-cell-inner x-grid3-col-2">
@@ -53,11 +53,11 @@
 									</div>
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-3 x-selectable" width="100">
-									<div class="x-grid3-cell-inner x-grid3-col-3"><?=$list['stats']['member_count']?></div>
+									<div class="x-grid3-cell-inner x-grid3-col-3"><?php echo $list['stats']['member_count']; ?></div>
 								</td>
 							</tr>
-							<? endforeach ?>
-							<? endif ?>
+							<?php endforeach ?>
+							<?php endif ?>
 						</tbody>
 					</table>
 				</div>

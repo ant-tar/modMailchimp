@@ -1,4 +1,5 @@
 <?php
+$snippet = 'lists';
 $in_snippet = true;
 include $modx->getOption('core_path') . 'components/modmailchimp/index.php';
 
@@ -9,7 +10,7 @@ $mc_lists = $api->lists();
 switch ($control) {
 	case 'select':
 	case 'multiselect': {
-		$field = '<select name="mmc_listId"' . ($control == 'multiselect' ? 'multiple="multiple"' : '') . '>';
+		$field = '<select name="listId"' . ($control == 'multiselect' ? 'multiple="multiple"' : '') . '>';
 		foreach ($mc_lists['data'] as $list) {
 			if (!$lists || ($lists && in_array($list['id'], $lists)))
 				$field.= '<option value="' . $list['id'] . '">' . $list['name'] . '</option>';
@@ -17,19 +18,19 @@ switch ($control) {
 		$field.= '</select>';
 		break;
 	}
-	case 'checkbox':
+	//case 'checkbox':
 	case 'radio': {
 		$field = '';
 		foreach ($mc_lists['data'] as $list) {
 			if (!$lists || ($lists && in_array($list['id'], $lists)))
-				$field.= '<input type="' . $control . '" name="mmc_listId" value="' . $list['id'] . '" /> ' . $list['name'] . '<br/>';
+				$field.= '<input type="' . $control . '" name="listId" value="' . $list['id'] . '" id="mmc_listId_'.$list['id'].'" /> <label for="mmc_listId_'.$list['id'].'">' . $list['name'] . '</label>';
 		}
 		break;
 	}
 }
 
 $rowData = array(
-	'tag' => 'mmc_listId',
+	'tag' => 'listId',
 	'name' => $label,
 	'input' => $field
 );

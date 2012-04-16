@@ -33,29 +33,29 @@
 				<div class="x-grid3-row x-grid3-row-alt x-grid3-row-collapsed">
 					<table cellspacing="0" cellpadding="0" border="0" width="100%" class="x-grid3-row-table">
 						<tbody>
-							<? if ($error): ?>
+							<?php if ($error): ?>
 							<tr>
 								<td rowspan="2" colspan="4" tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-expander x-selectable x-grid3-cell-first ">
 									<div class="x-grid3-cell-inner x-grid3-col-1">
-										<?=$error?>
+										<?php echo $error; ?>
 									</div>
 								</td>
 							</tr>
-							<? else: ?>
-							<? foreach ($fields as $field): ?>
+							<?php else: ?>
+							<?php foreach ($fields as $field): ?>
 							<tr>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-3 x-selectable" width="100">
-									<div class="x-grid3-cell-inner x-grid3-col-3"><pre><?=$field['tag']?></pre></div>
+									<div class="x-grid3-cell-inner x-grid3-col-3"><pre><?php echo $field['tag']; ?></pre></div>
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-1 x-selectable" width="300">
-									<div class="x-grid3-cell-inner x-grid3-col-1"><?=$field['name']?></div>
+									<div class="x-grid3-cell-inner x-grid3-col-1"><?php echo $field['name']; ?></div>
 								</td>
 								<td tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-3 x-selectable" width="200">
-									<div class="x-grid3-cell-inner x-grid3-col-3"><?=$field['field_type']?></div>
+									<div class="x-grid3-cell-inner x-grid3-col-3"><?php echo $field['field_type']; ?></div>
 								</td>
 							</tr>
-							<? endforeach ?>
-							<? endif ?>
+							<?php endforeach ?>
+							<?php endif ?>
 						</tbody>
 					</table>
 				</div>
