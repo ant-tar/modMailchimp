@@ -1,3 +1,8 @@
+[1.0.5-pl]
+- multiple forms fixed
+- unsubscription recaptcha errors fixed
+
+
 [1.0.0-pl]
 Added unsubscribe form (&action=`unsubscribe`)
 Added pending email check
