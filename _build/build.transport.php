@@ -1,30 +1,56 @@
 <?php
+/**
+ *
+ * build.transport.php
+ * @package
+ *
+ * Created by JetBrains PhpStorm
+ * Date: 14/04/12 6:06 PM
+ *
+ * http://www.bigblockstudios.ca
+ * https://github.com/BigBlockStudios
+ *
+ */
+
+
+// define package name, version, category etc.
 define('PKG_NAME', 'modMailchimp');
 define('PKG_NAME_LOWER', 'modmailchimp');
-define('PKG_VERSION', '1.0.5');
-define('PKG_RELEASE', 'pl');
+define('PKG_VERSION', '1.0.6');
+define('PKG_RELEASE', 'pl'); // {alpha|beta|rc|pl}
 define('PKG_CATEGORY', 'MailChimp');
 
-$mtime = microtime();
-$mtime = explode(' ', $mtime);
-$mtime = $mtime[1] + $mtime[0];
-$tstart = $mtime;
-set_time_limit(0);
-
+// create some paths for our build, not all are needed for every package
 $root = dirname(dirname(__FILE__)) . '/';
 $sources = array (
-	'root' => $root,
-	'build' => $root . '_build/',
-	'source_core' => $root . 'core/components/' . PKG_NAME_LOWER,
-	'resolvers' => $root . '_build/resolvers/',
-	'data' => $root . '_build/data/',
-	'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
-	'snippets' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/snippets/'
+    'root' => $root,
+    'build' => $root . '_build/',
+    'resolvers' => $root . '_build/resolvers/',
+    'validators' => $root . '_build/validators/',
+    'data' => $root . '_build/data/',
+    'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
+    'source_core' => $root . 'core/components/' . PKG_NAME_LOWER,
+    'source_assets' => $root . 'assets/components/' . PKG_NAME_LOWER,
+    'snippets' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/snippets/',
+    'chunks' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/chunks/',
+    'plugins' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/plugins/',
+    'tvs' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/tvs/',
+    'install_options' => $root . '_build/install.options/',
+    'packages' => $root . 'core/packages/',
+    'lexicon' => $root . 'core/components/' . PKG_NAME_LOWER . '/lexicon/',
 );
 unset($root);
 
 // Load/init MODx
-require_once dirname(__FILE__) . '/build.config.php';
+// if building in a modx environment, just include the config.core.php
+require_once dirname(dirname($sources['root'])).'/config.core.php';
+
+// otherwise define
+// define('MODX_CORE_PATH', '../../modx/core/');
+// define('MODX_CONFIG_KEY', 'config');
+// or include:
+// require_once dirname(__FILE__) . '/build.config.php';
+
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx = new modX();
 $modx->initialize('mgr');
@@ -42,85 +68,63 @@ $category= $modx->newObject('modCategory');
 $category->set('id',1);
 $category->set('category',PKG_CATEGORY);
 
-// Create the snippet
-$modx->log(modX::LOG_LEVEL_INFO,'Adding in snippets.');
-$snippets = array();
+// load some system settings
+$settings = array();
+include_once $sources['data'].'transport.settings.php';
 
-$snippets[1] = $modx->newObject('modSnippet');
-$snippets[1]->set('id', 0);
-$snippets[1]->set('name', 'modMailchimp');
-$snippets[1]->set('description', 'Generate MailChimp subscription form for your lists');
-$snippets[1]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.php'));
-
-$snippets[2] = $modx->newObject('modSnippet');
-$snippets[2]->set('id', 1);
-$snippets[2]->set('name', 'modMailchimpLists');
-$snippets[2]->set('description', 'Generate a list of your lists for use with the mailchimp snippet');
-$snippets[2]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.lists.php'));
-
-$snippets[3] = $modx->newObject('modSnippet');
-$snippets[3]->set('id', 2);
-$snippets[3]->set('name', 'modMailchimpMessage');
-$snippets[3]->set('description', 'Output messages from the modMailchimp snippet');
-$snippets[3]->set('snippet', file_get_contents($sources['source_core'] . '/snippet.message.php'));
-
-$category->addMany($snippets);
-
-// Load the chunks
-$modx->log(modX::LOG_LEVEL_INFO, 'Adding chunks');
-$chunks = array();
-
-$chunks[1] = $modx->newObject('modChunk');
-$chunks[1]->fromArray(array(
-    'id' => 1,
-    'name' => 'mmc_subscribe',
-    'description' => 'Default subscribe form for MailChimp',
-    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_subscribe.chunk.tpl'),
-    'properties' => ''
-), '', true, true);
-$chunks[2] = $modx->newObject('modChunk');
-$chunks[2]->fromArray(array(
-    'id' => 2,
-    'name' => 'mmc_unsubscribe',
-    'description' => 'Default unsubscribe form for modMailchimp',
-    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_unsubscribe.chunk.tpl'),
-    'properties' => ''
-), '', true, true);
-$chunks[3] = $modx->newObject('modChunk');
-$chunks[3]->fromArray(array(
-    'id' => 3,
-    'name' => 'mmc_row',
-    'description' => 'MailChimp form row template',
-    'snippet' => file_get_contents($sources['source_core'] . '/elements/chunks/mmc_row.chunk.tpl'),
-    'properties' => ''
-), '', true, true);
-
-$category->addMany($chunks);
+$attributes= array(
+    xPDOTransport::UNIQUE_KEY => 'key',
+    xPDOTransport::PRESERVE_KEYS => false,
+    xPDOTransport::UPDATE_OBJECT => true,
+);
+foreach ($settings as $setting) {
+    $vehicle = $builder->createVehicle($setting,$attributes);
+    $builder->putVehicle($vehicle);
+}
+unset($settings,$setting,$attributes);
 
 // Prepare category tree
 $attr = array(
-	xPDOTransport::UNIQUE_KEY => 'category',
-	xPDOTransport::PRESERVE_KEYS => false,
-	xPDOTransport::UPDATE_OBJECT => true,
-	xPDOTransport::RELATED_OBJECTS => true,
-	xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
-		'Snippets' => array(
-	        xPDOTransport::PRESERVE_KEYS => false,
-	        xPDOTransport::UPDATE_OBJECT => true,
-	        xPDOTransport::UNIQUE_KEY => 'name'
-		),
-        'Chunks' => array(
+    xPDOTransport::UNIQUE_KEY => 'category',
+    xPDOTransport::PRESERVE_KEYS => false,
+    xPDOTransport::UPDATE_OBJECT => true,
+    xPDOTransport::RELATED_OBJECTS => true,
+    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array(
+        'Snippets' => array(
             xPDOTransport::PRESERVE_KEYS => false,
             xPDOTransport::UPDATE_OBJECT => true,
             xPDOTransport::UNIQUE_KEY => 'name'
+        ),
+        'Chunks' => array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name',
         )
-	)
+    )
 );
+
+// add base snippets from a transport file
+$modx->log(modX::LOG_LEVEL_INFO,'Adding in modMailchimp snippets.'); flush();
+$snippets = include_once $sources['data'].'transport.snippets.php';
+if (is_array($snippets)) {
+    $category->addMany($snippets);
+} else {
+    $modx->log(modX::LOG_LEVEL_FATAL,'Adding modMailchimp snippets failed miserably.');
+}
+
+// add base chunks from a transport file
+$modx->log(modX::LOG_LEVEL_INFO,'Adding in modMailchimp chunks of bananas!'); flush();
+$chunks = include_once $sources['data'].'transport.chunks.php';
+if (is_array($chunks)) {
+    $category->addMany($chunks);
+} else {
+    $modx->log(modX::LOG_LEVEL_FATAL,'Adding modMailchimp chunks failed mysteriously?');
+}
 
 // Create the category vehicle
 $vehicle = $builder->createVehicle($category,$attr);
 
-// Register post-install script
+// Register post-install script - inserts all teh user install options
 $modx->log(modX::LOG_LEVEL_INFO,'Adding in Script Resolver.');
 $vehicle->resolve('php',array(
     'source' => $sources['resolvers'] . 'install.script.php',
@@ -128,8 +132,8 @@ $vehicle->resolve('php',array(
 
 // Tell MODx to copy the core/components dir
 $vehicle->resolve('file', array(
-	'source' => $sources['source_core'],
-	'target' => 'return MODX_CORE_PATH . \'components/\';'
+    'source' => $sources['source_core'],
+    'target' => 'return MODX_CORE_PATH . \'components/\';'
 ));
 
 // Inject category vehicle into the package
@@ -167,21 +171,13 @@ $builder->setPackageAttributes(array(
     'readme' => file_get_contents($sources['docs'] . 'readme.txt'),
     'changelog' => file_get_contents($sources['docs'] . 'changelog.txt'),
     'setup-options' => array(
-		'source' => $sources['build'] . 'setup.options.php'
+    'source' => $sources['build'] . 'setup.options.php'
     ),
 ));
 
 // We're done! Zip up the package
 $builder->pack();
 
-// Finish off with some stat dumping
-$mtime= microtime();
-$mtime= explode(" ", $mtime);
-$mtime= $mtime[1] + $mtime[0];
-$tend= $mtime;
-$totalTime= ($tend - $tstart);
-$totalTime= sprintf("%2.4f s", $totalTime);
-
 $modx->log(xPDO::LOG_LEVEL_INFO, "Package Built.");
-$modx->log(xPDO::LOG_LEVEL_INFO, "Execution time: {$totalTime}");
+
 exit();

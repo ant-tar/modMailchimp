@@ -18,7 +18,7 @@ $core_path = $modx->getOption('core_path');
 $allow_override = $modx->getOption('modmailchimp.allow_override');
 $output = '';
 
-if($snippet != 'message')
+if(!isset($snippet) || $snippet != 'message')
 {
 
 	if (!isset($in_snippet) || ($in_snippet && !$apiKey) || ($in_snippet && $apiKey && !$allow_override)) $apiKey = $modx->getOption('modmailchimp.api_key');

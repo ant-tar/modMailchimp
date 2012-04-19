@@ -50,6 +50,7 @@ if($recaptcha !== NULL) $recaptcha = (int)$recaptcha;
 
 $snippet = 'mailchimp';
 $in_snippet = true;
+
 include $modx->getOption('core_path') . 'components/modmailchimp/index.php';
 
 // Explode/strip the merge tags and add email if not set already

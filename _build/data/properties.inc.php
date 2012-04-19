@@ -1,10 +1,16 @@
 <?php
 /**
- * Default snippet properties
  *
- * @package mailchimp
+ * properties.inc.php
+ * @package modmailchimp
  * @subpackage build
- * @author Dave Shoreman <codeM0nK3Y@me.com>
+ *
+ * Created by JetBrains PhpStorm
+ * Date: 14/04/12 4:07 PM
+ *
+ * http://www.bigblockstudios.ca
+ * https://github.com/BigBlockStudios
+ *
  */
 
 /*
@@ -23,3 +29,4 @@
 
 $properties = array();
 return $properties;
+

@@ -1,7 +1,7 @@
 [1.0.5-pl]
 - multiple forms fixed
 - unsubscription recaptcha errors fixed
-
+- fixed issues with manager page short tags
 
 [1.0.0-pl]
 Added unsubscribe form (&action=`unsubscribe`)
