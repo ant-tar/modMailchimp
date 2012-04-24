@@ -1,4 +1,21 @@
 <?php
+/**
+ *
+ * snippet.modMailchimp.php
+ *
+ * Created using: JetBrains PhpStorm
+ * BigBlock Studios http://www.bigblockstudios.ca
+ * http://github.com/BigBlockStudios
+ * Date: 15/04/12, 2:42 PM
+ *
+ */
+
+
+
+//load the lexicon
+$modx->lexicon->load('modmailchimp:default');
+
+
 if (!function_exists('get_field')) {
 	function get_field ($list_field) {
 		extract($list_field);
@@ -50,6 +67,7 @@ if($recaptcha !== NULL) $recaptcha = (int)$recaptcha;
 
 $snippet = 'mailchimp';
 $in_snippet = true;
+
 include $modx->getOption('core_path') . 'components/modmailchimp/index.php';
 
 // Explode/strip the merge tags and add email if not set already
@@ -66,7 +84,8 @@ if (isset($_POST['mmc_subscribe']) || isset($_POST['mmc_unsubscribe'])) {
 	//if (!isset($_POST['listId']))
 	if(!$listId){
 		$data['errorCode'] = -1;
-		$data['errorMessage'] = 'Please specify a valid MailChimp list ID';
+        // $data['errorMessage'] = 'Please specify a valid MailChimp list ID';
+		$data['errorMessage'] = $modx->lexicon('modmailchimp.list_id_invalid');
 		if ($failureId) {
 			$_SESSION['mailchimp_error_code'] = $data['errorCode'];
 			$_SESSION['mailchimp_error_message'] = $data['errorMessage'];
@@ -81,7 +100,8 @@ if (isset($_POST['mmc_subscribe']) || isset($_POST['mmc_unsubscribe'])) {
 	if(!$lists)
 	{
 		$data['errorCode'] = -1;
-		$data['errorMessage'] = 'Please specify a valid MailChimp list ID';
+		// $data['errorMessage'] = 'Please specify a valid MailChimp list ID';
+		$data['errorMessage'] = $modx->lexicon('modmailchimp.list_id_invalid');
 		if ($failureId) {
 			$_SESSION['mailchimp_error_code'] = $data['errorCode'];
 			$_SESSION['mailchimp_error_message'] = $data['errorMessage'];
@@ -96,7 +116,9 @@ if (isset($_POST['mmc_subscribe']) || isset($_POST['mmc_unsubscribe'])) {
 	if ($email == '')
 	{
 		$data['errorCode'] = -1;
-		$data['errorMessage'] = 'Please enter an email address.';
+        // $data['errorMessage'] = 'Please enter an email address.';
+        $data['errorMessage'] = $modx->lexicon('modmailchimp.email_address_missing');
+
 		if ($failureId) {
 			$_SESSION['mailchimp_error_code'] = $data['errorCode'];
 			$_SESSION['mailchimp_error_message'] = $data['errorMessage'];
@@ -119,7 +141,8 @@ if (isset($_POST['mmc_subscribe']) || isset($_POST['mmc_unsubscribe'])) {
 			// What happens when the CAPTCHA was entered incorrectly
 			$process = false;
 			$data['errorCode'] = null;
-			$data['errorMessage'] = "The reCAPTCHA wasn't entered correctly. Go back and try it again. (reCAPTCHA said: " . $resp->error . ")";
+            //$data['errorMessage'] = "The reCAPTCHA wasn't entered correctly. Go back and try it again. (reCAPTCHA said: " . $resp->error . ")";
+            $data['errorMessage'] = $modx->lexicon('modmailchimp.recaptcha_incorrect') . $resp->error . ")";
 
 			if ($failureId) {
 				$_SESSION['mailchimp_error_code'] = $data['errorCode'];
@@ -137,7 +160,7 @@ if (isset($_POST['mmc_subscribe']) || isset($_POST['mmc_unsubscribe'])) {
 	}
 }
 if (isset($_POST['mmc_subscribe']) && $process) {
-	// TODO: Add foreach version to support multiple lists
+	// to-do: Add foreach version to support multiple lists
 
 	// Avoid processing all forms when only submitting one.
 	//if ($listId != $_POST['listId']) return '';
@@ -148,7 +171,8 @@ if (isset($_POST['mmc_subscribe']) && $process) {
 
 		if ($mailCheck['success'] && $mailCheck['data'][0]['status'] == 'pending') {
 			$data['errorCode'] = -1;
-			$data['errorMessage'] = 'This address is currently pending, please check for your confirmation email.';
+			//$data['errorMessage'] = 'This address is currently pending, please check for your confirmation email.';
+            $data['errorMessage'] = $modx->lexicon('modmailchimp.email_address_pending');
 
 			if ($failureId) {
 				$_SESSION['mailchimp_error_code'] = $data['errorCode'];
@@ -187,7 +211,8 @@ if (isset($_POST['mmc_subscribe']) && $process) {
 				}
 			}
 			else {
-				$data['success'] = 'Thanks! Please check your email to confirm your subscription.';
+				//$data['success'] = 'Thanks! Please check your email to confirm your subscription.';
+                $data['success'] = $modx->lexicon('modmailchimp.success_subscription');
 
 				if ($successId) {
 					unset($_SESSION['mailchimp_error_message'], $_SESSION['mailchimp_error_code']);
@@ -222,7 +247,8 @@ elseif (isset($_POST['mmc_unsubscribe']) && $process) {
 		if (isset($resp) && !$resp->is_valid) {
 			// What happens when the CAPTCHA was entered incorrectly
 			$data['errorCode'] = null;
-			$data['errorMessage'] = "The reCAPTCHA wasn't entered correctly. Go back and try it again. (reCAPTCHA said: " . $resp->error . ")";
+			//$data['errorMessage'] = "The reCAPTCHA wasn't entered correctly. Go back and try it again. (reCAPTCHA said: " . $resp->error . ")";
+			$data['errorMessage'] = $modx->lexicon('modmailchimp.recaptcha_incorrect') . $resp->error . ")";
 
 			if ($failureId) {
 				$_SESSION['mailchimp_error_code'] = $data['errorCode'];
@@ -242,7 +268,7 @@ elseif (isset($_POST['mmc_unsubscribe']) && $process) {
 			$status = $api->listUnsubscribe($listId, $email);
 			if (($api->errorCode || $status === false)) {
 				$data['errorCode'] = $api->errorCode ? $api->errorCode : null;
-				$data['errorMessage'] = $api->errorMessage ? $api->errorMessage : 'Unknown error';
+				$data['errorMessage'] = $api->errorMessage ? $api->errorMessage : $modx->lexicon('modmailchimp.error_unknown');
 
 				if ($failureId) {
 					$_SESSION['mailchimp_error_code'] = $data['errorCode'];
@@ -259,6 +285,7 @@ elseif (isset($_POST['mmc_unsubscribe']) && $process) {
 			}
 			else {
 				$data['success'] = 'Unsubscribe successful.';
+                $data['success'] = $modx->lexicon('modmailchimp.success_unsubscribe');
 
 				if ($successId) {
 					unset($_SESSION['mailchimp_error_message'], $_SESSION['mailchimp_error_code']);
@@ -332,7 +359,7 @@ $data['formName'] = $formName;
 
 			if($recaptcha)
 			{
-				$fields .= $modx->getChunk($rowTpl, array('tag' => 'RECAPTCHA', 'name' => 'Enter this text', 'input' => $recaptcha_field));
+				$fields .= $modx->getChunk($rowTpl, array('tag' => 'RECAPTCHA', 'name' => $modx->lexicon('modmailchimp.recaptcha_enter_text'), 'input' => $recaptcha_field));
 			}
 			$data['recaptchField'] = $recaptcha_field;
 
@@ -356,7 +383,7 @@ $data['formName'] = $formName;
 
 			 if($recaptcha !== 0)
 			 {
-			 	$fields .= $modx->getChunk($rowTpl, array('tag' => 'RECAPTCHA', 'name' => 'Enter this text', 'input' => $recaptcha_field));
+			 	$fields .= $modx->getChunk($rowTpl, array('tag' => 'RECAPTCHA', 'name' => $modx->lexicon('modmailchimp.recaptcha_enter_text'), 'input' => $recaptcha_field));
 			 }
 
 			 $data['fields'] = $fields;
