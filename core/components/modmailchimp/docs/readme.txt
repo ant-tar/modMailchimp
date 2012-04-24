@@ -62,7 +62,7 @@ Snippets:
 &rowTpl {default:mmc_row} if specified the chunk to use for each row in the form
 &formName {default:mailchimp} required if multiple forms are used in a single resource [names must be unique]
 &recaptcha {default:true} use recaptcha or not [default = true on unsubscribe, default = false on subscribe forms.]
-&listLists {default:NULL} include a form control to allow list selection
+&listLists {default:NULL} if not specifying a list id, a comma separated list of lists to show in a form control
 &listLabel {default:'Which List?'} the label to use for the list form control
 &listControl {default:select} the type of form control[s] to output [radio|select]
 
@@ -70,7 +70,7 @@ modMailchimp use:
 Placing the [[modMailchimp? &listId=`listId`]] tag in a resource will by default display a subscription form for the list id specified using the default form chunk. Upon submission mailchimp success or error messages are returned to the same page using the default chunk unless success and/or failure attributes are specified.
 The simplest [and fastest] way to use modMailchimp is to go to the custom manager page [under componenets], copy the code there into the resource where you want the subscription form to appear, the only required attribute is the listId.
 
-listId: the listId attribute is required, you may, however, override it by using a listId form field in a custom subscribeTpl or by using the listLists attribute, which will add a listId form control [select|radio or checkbox] to your subscribeTpl.
+listId: the listId attribute, you may, omit or override it by using a listId form field in a custom subscribeTpl or by using the listLists attribute, which will add a listId form control [select|radio] to your subscribeTpl.
 
 apiKey, You can override the default apiKey set in the system settings [if the allow override setting is true] if you need to use a different mailchimp account. 
 
