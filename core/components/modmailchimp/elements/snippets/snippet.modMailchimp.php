@@ -334,7 +334,7 @@ $data['formName'] = $formName;
 			{
 				$fields .= $modx->getChunk($rowTpl, array('tag' => 'RECAPTCHA', 'name' => 'Enter this text', 'input' => $recaptcha_field));
 			}
-			$data['recaptcha_field'] = $recaptcha_field;
+			$data['recaptchField'] = $recaptcha_field;
 
 			$data['fields'] = $fields;
 			$output.= $modx->getChunk($subscribeTpl, $data);
@@ -361,7 +361,7 @@ $data['formName'] = $formName;
 
 			 $data['fields'] = $fields;
 
-			 $data['recaptcha_field'] = $recaptcha_field;
+			 $data['recaptchaField'] = $recaptcha_field;
 			$output.= $modx->getChunk($unsubscribeTpl, $data);
 			break;
 		}
