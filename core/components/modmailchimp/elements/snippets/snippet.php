@@ -4,6 +4,7 @@ $apiKey = $modx->getOption('apiKey', $scriptProperties, NULL);
 $action = $modx->getOption('action', $scriptProperties, 'subscribe');
 $listId = $modx->getOption('listId', $scriptProperties, FALSE);
 $mergeTags = $modx->getOption('mergeTags', $scriptProperties, 'EMAIL');
+$interests = $modx->getOption('interests', $scriptProperties, FALSE);
 
 // Recaptcha
 $recaptcha = $modx->getOption('recaptcha', $scriptProperties, NULL);

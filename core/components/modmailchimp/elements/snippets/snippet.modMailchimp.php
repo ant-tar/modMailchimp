@@ -15,19 +15,26 @@
 //load the lexicon
 $modx->lexicon->load('modmailchimp:default');
 
-
 if (!function_exists('get_field')) {
 	function get_field ($list_field) {
 		extract($list_field);
-		if ($field_type != 'email') $tag = 'mmc_mergevars[' . $tag . ']';
+		$tag_id = $tag;
+		$interests = strpos($tag, 'mmc_interests') !== FALSE;
+
+		if ($field_type != 'email' && !$interests) $tag = 'mmc_mergevars[' . $tag . ']';
 
 		switch ($field_type) {
 			case 'dropdown': {
-				$selected = isset($_POST[$tag]) ? $_POST[$tag] : false;
-
 				$field = '<select name="' . $tag . '">';
 				foreach ($choices as $opt_id => $option) {
-					$field.= '<option value="' . $opt_id . '"' . ($selected == $opt_id ? ' selected="selected"' : '') . '>' . $option . '</option>';
+					if($interests){
+						$selected = isset($_POST['mmc_interests'][$group_id]) && $_POST['mmc_interests'][$group_id] == $opt_id  ? ' selected="selected"' : '';
+						if(!$selected) $selected = isset($_POST['mmc_interests'][$group_name]) && $_POST['mmc_interests'][$group_name] == $opt_id  ? ' selected="selected"' : '';
+					} else {
+						$selected = isset($_POST[$tag]) && $_POST[$tag] == $opt_id  ? ' selected="selected"' : '';
+					}
+
+					$field.= '<option value="' . $opt_id . '"' . $selected . '>' . $option . '</option>';
 				}
 				$field.= '</select>';
 				break;
@@ -35,8 +42,27 @@ if (!function_exists('get_field')) {
 			case 'radio': {
 				$field = '<p>';
 				foreach ($choices as $opt_id => $option) {
-					$selected = isset($_POST[$tag]) ? ' selected="selected"' : '';
-					$field.= '<input type="radio" name="' . $tag . '" value="' . $opt_id . '" ' . $selected . ' />' . $option . '<br />';
+					if($interests){
+						$checked = isset($_POST['mmc_interests'][$group_id]) && $_POST['mmc_interests'][$group_id] == $opt_id  ? ' checked="checked"' : '';
+						if(!$checked) $checked = isset($_POST['mmc_interests'][$group_name]) && $_POST['mmc_interests'][$group_name] == $opt_id  ? ' checked="checked"' : '';
+					} else {
+						$checked = isset($_POST[$tag]) && $_POST[$tag] == $opt_id  ? ' checked="checked"' : '';
+					}
+					$field.= '<input type="radio" name="' . $tag . '" value="' . $opt_id . '" id="'.$tag_id.'_'.$opt_id.'" ' . $checked . ' /><label for="'.$tag_id.'_'.$opt_id.'">' . $option . '</label><br />';
+				}
+				$field.= '</p>';
+				break;
+			}
+			case 'checkbox': {
+				$field = '<p>';
+				foreach ($choices as $opt_id => $option) {
+					if($interests){
+						$checked = isset($_POST['mmc_interests'][$group_id]) && in_array($opt_id, $_POST['mmc_interests'][$group_id])  ? ' checked="checked"' : '';
+						if(!$checked) $checked = isset($_POST['mmc_interests'][$group_name]) && in_array($opt_id, $_POST['mmc_interests'][$group_name])  ? ' checked="checked"' : '';
+					} else {
+						$checked = isset($_POST[$tag]) && $_POST[$tag] == $opt_id  ? ' checked="checked"' : '';
+					}
+					$field.= '<input type="checkbox" name="' . $tag . '[]" value="' . $opt_id . '" id="'.$tag_id.'_'.$opt_id.'" ' . $checked . ' /><label for="'.$tag_id.'_'.$opt_id.'">' . $option . '</label><br />';
 				}
 				$field.= '</p>';
 				break;
@@ -191,8 +217,28 @@ if (isset($_POST['mmc_subscribe']) && $process) {
 			// Check for merge vars
 			$postedVars = isset($_POST['mmc_mergevars']) ? $_POST['mmc_mergevars'] : NULL;
 
+			// Interest Groups - needs to be array(array('name' => 'Group Name', 'groups' => 'Group1, Group2, etc'), array(...))
+			if($interestGroups)
+			{
+				$groups = array();
+				foreach($_POST['mmc_interests'] as $id => $group)
+				{
+					if(!is_array($group)) $group = array($group);
+
+					$groupData = array('groups' => implode(',', $group));
+
+					if(is_numeric($id)) $groupData['id'] = $id;
+					else $groupData['name'] = $id;
+
+					$groups[] = $groupData;
+				}
+
+				$postedVars['GROUPINGS'] = $groups;
+			}
+
 			// Attempt to subscribe
 			$status = $api->listSubscribe($listId, $email, $postedVars);
+
 			if (($api->errorCode || $status === false)) {
 				$data['errorCode'] = $api->errorCode ? $api->errorCode : null;
 				$data['errorMessage'] = $api->errorMessage ? $api->errorMessage : 'Unknown error';
@@ -226,6 +272,9 @@ if (isset($_POST['mmc_subscribe']) && $process) {
 					 ? $data[$placeholder] . '<br/>' . $data['success']
 					 : $data['success'];
 				}
+
+				//kill the post data on success
+				unset($_POST['EMAIL'], $_POST['mmc_mergevars'], $_POST['mmc_interests']);
 			}
 		}
 	}
@@ -333,6 +382,37 @@ $data['formName'] = $formName;
 					);
 					$fields .= $modx->getChunk($rowTpl, $rowData);
 				}
+
+				// How about interest groups?
+				if($interestGroups)
+				{
+					$groupings = $api->listInterestGroupings($listId);
+					//echo '<pre>$interestGroups = ', print_r($interestGroups, TRUE), '</pre>';
+					foreach($groupings as $grouping)
+					{
+						$choices = array();
+						foreach($grouping['groups'] as $group)
+						{
+							$choices[$group['name']] = $group['name'];
+						}
+
+						$group_tag = array(
+							'field_type' => $grouping['form_field'] == 'checkboxes' ? 'checkbox' : $grouping['form_field'],
+							'tag' => 'mmc_interests['.$grouping['id'].']',
+							'choices' => $choices,
+							'group_id' => $grouping['id'],
+							'group_name' => $grouping['name']
+						);
+
+						$rowData = array(
+							'tag' => $group_tag['tag'],
+							'name' => $grouping['name'],
+							'input' => get_field($group_tag)
+						);
+						$fields .= $modx->getChunk($rowTpl, $rowData);
+					}
+				}
+
 			}
 			else
 			{

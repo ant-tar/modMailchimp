@@ -16,7 +16,7 @@
 // define package name, version, category etc.
 define('PKG_NAME', 'modMailchimp');
 define('PKG_NAME_LOWER', 'modmailchimp');
-define('PKG_VERSION', '1.0.6');
+define('PKG_VERSION', '1.0.7');
 define('PKG_RELEASE', 'pl'); // {alpha|beta|rc|pl}
 define('PKG_CATEGORY', 'MailChimp');
 

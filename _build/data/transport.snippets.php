@@ -50,7 +50,7 @@ $snippets[1]->fromArray(array(
 // unset($properties);
 
 
-// the unsubscribe snippet
+// the message snippet
 $snippets[2] = $modx->newObject('modSnippet');
 $snippets[2]->fromArray(array(
     'id' => 2,
