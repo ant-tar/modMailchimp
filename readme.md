@@ -1,3 +1,10 @@
+
+modMailchimp is no longer being maintained or supported. 
+
+Looking for developers to take over!
+
+
+
 == modMailchimp ==
 
 modMailchimp is a MODx package that lets you easily place a subscribe form anywhere on your website for any list you want.
