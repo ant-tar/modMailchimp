@@ -1,9 +1,4 @@
 
-modMailchimp is no longer being maintained or supported. 
-
-Looking for developers to take over!
-
-
 
 == modMailchimp ==
 
