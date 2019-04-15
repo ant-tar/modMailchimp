@@ -33,7 +33,7 @@
 				<div class="x-grid3-row x-grid3-row-alt x-grid3-row-collapsed">
 					<table cellspacing="0" cellpadding="0" border="0" width="100%" class="x-grid3-row-table">
 						<tbody>
-							<?php if ($error): ?>
+							<?php if (0): ?>
 							<tr>
 								<td rowspan="2" colspan="4" tabindex="0" class="x-grid3-col x-grid3-cell x-grid3-td-expander x-selectable x-grid3-cell-first ">
 									<div class="x-grid3-cell-inner x-grid3-col-1">

@@ -5,12 +5,15 @@ if (!function_exists('load_view')) {
 		extract($data);
 		
 		ob_start();
-		include($modx->getOption('core_path') . '/components/modmailchimp/views/' . $view . '.php');
+		include($modx->getOption('core_path') . 'components/modmailchimp/views/' . $view . '.php');
 		$tpl = ob_get_contents();
 		ob_end_clean();
 		return $tpl;
 	}
 }
+
+// load the lexicon
+// $modx->lexicon->load('modmailchimp:default');
 
 // Setup default properties
 $base_path = $modx->getOption('base_path');
@@ -24,13 +27,19 @@ if(!isset($snippet) || $snippet != 'message')
 	if (!isset($in_snippet) || ($in_snippet && !$apiKey) || ($in_snippet && $apiKey && !$allow_override)) $apiKey = $modx->getOption('modmailchimp.api_key');
 
 	// Load the MailChimp API
-	require_once $modx->getOption('core_path') . 'components/modmailchimp/MCAPI.class.php';
-	$api = new MCAPI($apiKey);
+	//require_once $modx->getOption('core_path') . 'components/modmailchimp/MCAPI.class.php';
+	//$api = new MCAPI($apiKey);
+	
+	$modx->loadClass('modmailchimp', $modx->getOption('modmailchimp.core_path', null, $modx->getOption('core_path') . 'components/modmailchimp/') . 'model/', true, true);
+    $api = new ModMailchimp($modx, $apiKey);
+   // echo print_r($api);
+	
 
 	// Load Recaptcha
 	require_once $modx->getOption('core_path') . 'components/modmailchimp/recaptchalib.php';
 
 	if (!isset($in_snippet)) {
+	    echo "IN_SNIPPET";
 		// Init tabs
 		$a = isset($_REQUEST['a']) ? $_REQUEST['a'] : NULL;
 		$tabs = array('Main');
@@ -57,7 +66,8 @@ if(!isset($snippet) || $snippet != 'message')
 			case 'lists': {
 				$data['page_title'] = 'MailChimp Lists';
 				$view = 'lists';
-				$data['lists'] = $api->lists();
+				$data['lists'] = $api->lists->getList();
+				
 				break;
 			}
 			case 'fields': {
@@ -67,9 +77,9 @@ if(!isset($snippet) || $snippet != 'message')
 
 				if (!$listId) $data['error'] = 'List ID must be set';
 				else {
-					$data['fields'] = $api->listMergeVars($listId);
+					$data['fields'] = $api->lists->mergeVars($listId);
 
-					if ($api->errorCode) {
+					if (0) {
 						$ecode = trim($api->errorCode) != '' ? ' (Error code ' . $api->errorCode . ')' : '';
 						$data['error'] = 'Failed to load merge fields' .  $ecode . '<br/>' . $api->errorMessage;
 					}
@@ -77,7 +87,7 @@ if(!isset($snippet) || $snippet != 'message')
 				break;
 			}
 		}
-		
+		//echo print_r($data);
 		// Load the views
 		$output.= load_view('common/header', $data);
 		$output.= load_view('grids/' . $view, $data);

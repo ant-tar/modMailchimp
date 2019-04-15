@@ -26,6 +26,7 @@ $_lang['modmailchimp.list_id_invalid'] = $lex . 'Please specify a valid MailChim
 
 // recaptcha errors
 $_lang['modmailchimp.recaptcha_incorrect'] = $lex . 'The reCAPTCHA wasn\'t entered correctly. Go back and try it again. (reCAPTCHA said: ';
+$_lang['modmailchimp.recaptcha_enter_text'] = $lex . 'Enter this text.';
 
 // email address messages
 $_lang['modmailchimp.email_address_missing'] = $lex . 'Please enter an email address.';
